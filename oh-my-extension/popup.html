@@ -1,0 +1,401 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Oh My Extension</title>
+	<!-- <script src="popup.js"></script> -->
+
+	<style> 
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			min-width: 250px;
+		}
+
+		p {
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+			font-size: 13px;
+			text-align: center;
+			color: darkslategray;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 100vh;
+		}
+
+		.popup {
+			width:300px;
+			border: 1px solid lightgray;
+			text-align:center;
+			box-shadow: 5px 5px 30px -4px rgba(176,116,176,0.84);
+		}
+
+		.section {
+			border-top: 1px solid lightgray;
+		}
+
+		.section:hover {
+			background-color: #e6b9eb;
+		}
+
+		.home {
+			padding: 10px 0;
+		}
+
+		.home:hover {
+			background-color: #cacccc;
+		}
+
+		.home img {
+			padding: 5px 140px;
+		}
+
+		img {
+			display: block;
+			width: 24px;
+			height: 24px;
+		}
+
+		.b-tab {
+			padding: 50px 0;
+			border-top: 1px solid lightgray;
+			display: none;
+		}
+
+		.b-tab.active {
+			display: block;
+		}
+
+		.b-tab:hover {
+			background-color: #ddd2db;
+		}
+
+		.b-nav-tab {
+			display: inline-block;
+			padding: 10px 20px;
+		}
+
+		.b-nav-tab.active {
+			color: #ff4200;
+		}
+
+		ul li {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: flex-start;
+			padding: 0 55px;
+			list-style-type: disc;
+			font-size: 15px;
+			color: darkorchid;
+		}
+
+		table {
+			font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		td, th {
+			border: 1px solid #ddd;
+			padding: 5px;
+		}
+
+		tr:nth-child(even){
+			background-color: #f2f2f2;
+		}
+
+		tr:hover {
+			background-color: #ddd;
+		}
+
+		th {
+			padding: 6px 0;
+			text-align: center;
+			background-color: plum;
+			color: purple;
+		}
+
+		/* Remove margins and padding from the list */
+		.todos ul {
+			margin: 0;
+			padding: 0;
+		}
+
+		/* Style the list items */
+		.todos ul li {
+			cursor: pointer;
+			position: relative;
+			padding: 12px 8px 12px 40px;
+			list-style-type: none;
+			background: #eee;
+			font-size: 18px;
+			transition: 0.2s;
+			user-select: none;
+		}
+
+		/* Set all odd list items to a different color (zebra-stripes) */
+		.todos ul li:nth-child(odd) {
+			background: #f9f9f9;
+		}
+
+		/* Darker background-color on hover */
+		.todos ul li:hover {
+			background: #ddd;
+		}
+
+		/* When clicked on, add a background color and strike out text */
+		.todos ul li.checked {
+			background: #888;
+			color: #fff;
+			text-decoration: line-through;
+		}
+
+		/* Add a "checked" mark when clicked on */
+		.todos ul li.checked::before {
+			content: '';
+			position: absolute;
+			border-color: #fff;
+			border-style: solid;
+			border-width: 0 2px 2px 0;
+			top: 10px;
+			left: 16px;
+			transform: rotate(45deg);
+			height: 15px;
+			width: 7px;
+		}
+
+		/* Style the close button */
+		.close {
+			position: absolute;
+			right: 0;
+			top: 0;
+			padding: 12px 16px 12px 16px;
+		}
+
+		.close:hover {
+			background-color: #ff6f65;
+			color: white;
+		}
+
+		/* Style the header */
+		.header {
+			background-color: plum;
+			padding: 15px;
+			color: white;
+			text-align: center;
+		}
+
+		/* Clear floats after the header */
+		.header:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		/* Style the input */
+		input {
+			margin: 0;
+			border: none;
+			border-radius: 0;
+			width: 200px;
+			height: 38px;
+			padding: 10px;
+			float: left;
+			font-size: 16px;
+		}
+
+		/* Style the "Add" button */
+		.addBtn {
+			padding: 10px;
+			width: 45px;
+			height: 18px;
+			background: #d9d9d9;
+			color: #555;
+			float: left;
+			text-align: center;
+			font-size: 16px;
+			cursor: pointer;
+			transition: 0.3s;
+			border-radius: 0;
+		}
+
+		.addBtn:hover {
+			background-color: #bbb;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="popup">
+			<div class="home">
+				<a class="home-link" href="#">
+					<img src="home.svg" alt="home">
+					<p>Home</p>
+				</a>
+			</div>
+			<div class="section">
+				<a href="#favorite" data-tab="favorite" class="section-link b-nav-tab active">
+					<img src="favorite.svg" alt="favorite">
+					<p>Favorites</p>
+				</a>
+				<a href="#notes" data-tab="notes" class="section-link b-nav-tab">
+					<img src="series.svg" alt="notes">
+					<p>Notes</p>
+				</a>
+				<a href="#todos" data-tab="todos" class="section-link b-nav-tab">
+					<img src="notes.svg" alt="todos">
+					<p>Todos</p>
+				</a>
+			</div>
+		
+			<div id="favorite" class="favorite b-tab active">
+				<ul>
+					<li>Flashforward</li>
+					<li>Lucifer</li>
+					<li>Penny Dreadful</li>
+				</ul>
+			</div>
+			<div id="notes" class="notes b-tab">
+				<table>
+					<tr>
+						<th>Series</th>
+						<th>Season</th>
+						<th>Episode</th>
+					</tr>
+					<tr>
+						<td>Bla</td>
+						<td>S1</td>
+						<td>E1</td>
+					</tr>
+					<tr>
+						<td>Bla</td>
+						<td>S1</td>
+						<td>E1</td>
+					</tr>
+					 <tr>
+						<td>Bla</td>
+						<td>S1</td>
+						<td>E1</td>
+					</tr>
+					<tr>
+				</table>
+			</div>
+			
+			<div id="todos" class="todos b-tab">
+				<div id="myDIV" class="header">
+					<input type="text" id="myInput" placeholder="Title...">
+					<span onclick="newElement()" class="addBtn">Add</span>
+				</div>
+				
+				<ul id="myUL">
+					<li>Bla S1 E1</li>
+					<li class="checked">Bla S1 E1</li>
+					<li>Bla S1 E1</li>
+					<li>Bla S1 E1</li>
+					<li>Bla S1 E1</li>
+					<li>Bla S1 E1</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<script>
+
+function Tabs() {
+  var bindAll = function() {
+    var menuElements = document.querySelectorAll('[data-tab]');
+    for(var i = 0; i < menuElements.length ; i++) {
+      menuElements[i].addEventListener('click', change, false);
+    }
+  }
+
+  var clear = function() {
+    var menuElements = document.querySelectorAll('[data-tab]');
+    for(var i = 0; i < menuElements.length ; i++) {
+      menuElements[i].classList.remove('active');
+      var id = menuElements[i].getAttribute('data-tab');
+      document.getElementById(id).classList.remove('active');
+    }
+  }
+
+  var change = function(e) {
+    clear();
+    e.target.classList.add('active');
+    var id = e.currentTarget.getAttribute('data-tab');
+    document.getElementById(id).classList.add('active');
+  }
+
+  bindAll();
+}
+
+var connectTabs = new Tabs();
+
+	</script>
+
+	<script>
+		// Create a "close" button and append it to each list item
+		var myNodelist = document.getElementsByTagName("LI");
+		var i;
+		for (i = 0; i < myNodelist.length; i++) {
+			var span = document.createElement("SPAN");
+			var txt = document.createTextNode("\u00D7");
+			span.className = "close";
+			span.appendChild(txt);
+			myNodelist[i].appendChild(span);
+		}
+		
+		// Click on a close button to hide the current list item
+		var close = document.getElementsByClassName("close");
+		var i;
+		for (i = 0; i < close.length; i++) {
+			close[i].onclick = function() {
+				var div = this.parentElement;
+				div.style.display = "none";
+			}
+		}
+		
+		// Add a "checked" symbol when clicking on a list item
+		var list = document.querySelector('ul');
+		list.addEventListener('click', function(ev) {
+			if (ev.target.tagName === 'LI') {
+				ev.target.classList.toggle('checked');
+			}
+		}, false);
+		
+		// Create a new list item when clicking on the "Add" button
+		function newElement() {
+			var li = document.createElement("li");
+			var inputValue = document.getElementById("myInput").value;
+			var t = document.createTextNode(inputValue);
+			li.appendChild(t);
+			if (inputValue === '') {
+				alert("You must write something!");
+			} else {
+				document.getElementById("myUL").appendChild(li);
+			}
+			document.getElementById("myInput").value = "";
+		
+			var span = document.createElement("SPAN");
+			var txt = document.createTextNode("\u00D7");
+			span.className = "close";
+			span.appendChild(txt);
+			li.appendChild(span);
+		
+			for (i = 0; i < close.length; i++) {
+				close[i].onclick = function() {
+					var div = this.parentElement;
+					div.style.display = "none";
+				}
+			}
+		}
+		</script>
+</body>
+</html>
+
